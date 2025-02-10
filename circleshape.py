@@ -14,6 +14,7 @@ class CircleShape(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2(0, 0)
         self.radius = radius
 
+        self.rect = pygame.Rect(x - radius, y - radius * 2, radius * 2, radius * 2)
     
     def draw(self, screen): # sub-classes must override
         pass

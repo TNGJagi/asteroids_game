@@ -16,23 +16,33 @@ class Asteroid(CircleShape):
 
     def update(self, dt):
         self.position += self.velocity * dt
+        self.rect.center = (int(self.position.x), int(self.position.y))
 
 
-    def split(self):
-        self.kill()
-        if self.radius <+ ASTEROID_MIN_RADIUS:
-            return
-        else:
-            random_angle1 = random.uniform(20, 50)
-            random_angle2 = random.uniform(-20, -50)
-           
-            new_radius = self.radius - ASTEROID_MIN_RADIUS
-            
-            asteroid1 = Asteroid(self.position.x, self.position.y, new_radius)
-            asteroid2 = Asteroid(self.position.x, self.position.y, new_radius)
+    def split(self, scoreboard, asteroids, updatables, drawables):
+        """Splits an asteroid into two smaller ones if its radius is greater than the minimum."""
+        print(f"Splitting asteroid at {self.position}, radius: {self.radius}")  # ✅ Debugging print
+        self.kill()  # ✅ Remove the original asteroid
 
-            asteroid1.velocity = self.velocity.rotate(random_angle1)
-            asteroid2.velocity = self.velocity.rotate(random_angle2)
+        scoreboard.add_points(int(self.radius) * 10)  # ✅ Add points for destroying this asteroid
 
-            asteroid1.add(self.groups())  # This ensures they are added to all the groups the original asteroid was in
-            asteroid2.add(self.groups())
+        if self.radius <= ASTEROID_MIN_RADIUS:
+            print("Asteroid too small to split, stopping.")  # ✅ Debugging
+            return  # Stop if too small to split
+
+        new_radius = self.radius // 2  # ✅ Make new asteroids smaller
+        random_angle1 = random.uniform(20, 50)
+        random_angle2 = -random_angle1
+
+        # ✅ Create new asteroids
+        asteroid1 = Asteroid(self.position.x, self.position.y, new_radius)
+        asteroid2 = Asteroid(self.position.x, self.position.y, new_radius)
+
+        asteroid1.velocity = self.velocity.rotate(random_angle1) * 1.2
+        asteroid2.velocity = self.velocity.rotate(random_angle2) * 1.2
+
+        # ✅ Explicitly add new asteroids to all relevant groups
+        asteroid1.add(asteroids, updatables, drawables)
+        asteroid2.add(asteroids, updatables, drawables)
+
+        print("New asteroids created:", asteroid1, asteroid2)
